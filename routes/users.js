@@ -6,7 +6,8 @@ const {
   addNewuser,
   addStaking,
   getReward,
-  collectReward
+  collectReward,
+  unStakeNft
 } = require("../controllers/users");
 
 
@@ -29,6 +30,10 @@ router.post(
   verifyAuth,
   collectReward
 );
-
+router.post(
+  "/unStakeNft",
+  verifyAuth,
+  unStakeNft
+);
 
 module.exports = router;

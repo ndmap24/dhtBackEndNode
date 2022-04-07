@@ -171,16 +171,31 @@ exports.getReward = async (req, res) => {
                                 }
                                 console.log("price",price);
                                 console.log("collectReward",collectReward);
-        
-                                price = price - collectReward;
+                                console.log("findata.totalrewards",findata.totalrewards);
+                                users.findByIdAndUpdate(id,{$set:{totalrewards:price}},(err,updatedData)=>{
+                                    if(err){
+                                        return res.json({
+                                            status:400,
+                                            message:"Something is Wrong"
+                                        });
+                                    }
+                                    else{
+                                        console.log("Data Successfully updated",updatedData);
+                                        price = price - collectReward;
+                                        return res.json({
+                                            status: 200,
+                                            Reward: price
+                                        });
+                                    }
+                                })
+                                // price = price - collectReward;
+                                // var totalrewards = findata.totalrewards;
+                                // if(totalrewards == undefined && totalrewards !== null && totalrewards !== ""){
+
+                                // }
                                 // if(price == 0){
                                 
                                 // }
-
-                                return res.json({
-                                    status: 200,
-                                    Reward: price
-                                });
                             }
                         })
                     }
@@ -220,7 +235,15 @@ exports.collectReward = async (req, res) => {
                             reward = reward;
                         }
                         else{
-                            reward = userReward + reward;
+                            if(reward <= (findData.totalrewards-userReward)){
+                                reward = userReward + reward;
+                            }
+                            else{
+                                return res.json({
+                                    status:402,
+                                    message:"You have no more rewards"
+                                })
+                            }
                         }
                         users.findByIdAndUpdate(id,{$set:{collectReward:reward}},(err,update)=>{
                             if (err) {
@@ -236,6 +259,70 @@ exports.collectReward = async (req, res) => {
                                 })
                             }
                         })
+                    }
+                });
+            }
+        });
+    }
+}
+exports.unStakeNft = async(req, res)=>{
+    var accessToken = req.headers.authorization;
+    var token = accessToken && accessToken.split(' ')[1];
+    if (token == null)
+        return res.sendStatus(401)
+    else 
+    {
+        jwt.verify(token, process.env.SECRET, (err, user) => {
+            if (err) {
+                console.log("err", err);
+                return res.sendStatus(403)
+            }
+            else {
+                console.log("Done");
+                var unStakeArr = req.body.unStakeArr;
+                console.log("unStakeArr",unStakeArr);
+                if(unStakeArr == undefined || unStakeArr == "" || unStakeArr == null){
+                    return res.json({
+                        status:400,
+                        message:"Please Select Nft's For UnStake"
+                    });
+                }
+                console.log("user", user.data._id);
+                var id = user.data._id;
+                users.findById(id, (err, findUser) => {
+                    if (err) {
+                        return res.json({
+                            status: 400,
+                            message: "Something is wrong"
+                        });
+                    }
+                    else {
+                        var userId = findUser._id;
+                        console.log("userId",userId);
+                        stake.find({userId:userId},async(err,totalStake)=>{
+                            if(err){
+                                return res.json({
+                                    status: 400,
+                                    message: "Something is wrong"
+                                });
+                            }
+                            else{
+                                for(let i = 0; i < totalStake.length; i++){
+                                    stake.updateOne({_id:totalStake[i]._id},{$pullAll:{'stakeNft':unStakeArr}},(err,finallyUpdate)=>{
+                                        if(err){
+                                            return res.json({
+                                            status: 400,
+                                            message: "Something is wrong"
+                                            });
+                                        }
+                                    });
+                                }
+                                return res.json({
+                                    status:200,
+                                    message:"Successfully Unstake NFT's"
+                                });
+                            }
+                        });
                     }
                 });
             }

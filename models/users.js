@@ -11,6 +11,10 @@ var users = new Schema({
 		type: Number,
 		default:0
 	},
+	totalrewards:{
+		type: Number,
+		default:0
+	},
 	isDelete:{
 		type: Boolean,
 		default:false
