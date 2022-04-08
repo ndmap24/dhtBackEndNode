@@ -178,7 +178,6 @@ exports.getReward = async (req, res) => {
                                 console.log("price",price);
                                 console.log("collectReward",collectReward);
                                 console.log("findata.totalrewards",findata.totalrewards);
-
                                 users.findByIdAndUpdate(id,{$set:{totalrewards:price}},(err,updatedData)=>{
                                     if(err){
                                         return res.json({
