@@ -65,6 +65,11 @@ exports.addStaking = async (req, res) => {
     // console.log("DONE");
     // console.log("Array nft", req.body);
     var stakeNft = req.body.stakeNft;
+    const arrOfNum = stakeNft.map(str => {
+        return Number(str);
+      });
+    console.log("arrOfNum",arrOfNum);
+    
     var accessToken = req.headers.authorization;
     var token = accessToken && accessToken.split(' ')[1];
 
@@ -88,10 +93,10 @@ exports.addStaking = async (req, res) => {
                         })
                     }
                     else {
-                        if (stakeNft !== null) {
+                        if (arrOfNum !== null) {
                             var data = {
                                 userId: findUser._id,
-                                stakeNft: stakeNft,
+                                stakeNft: arrOfNum,
                                 metamaskAddress: findUser.metamaskAddress
                             }
                             var saveData = new stake(data);
@@ -166,6 +171,7 @@ exports.getReward = async (req, res) => {
                                     const currentDate = new Date();
                                     const timediff = Math.abs(currentDate - createdDate);
                                     const diffDays = Math.ceil(timediff / (1000 * 60 * 60 * 24)) - 1;
+                                    console.log("diffDays",diffDays);
                                     stakeLength = totalstack[i].stakeNft.length;
                                     price += diffDays * stakeLength * 0.375;
                                 }
@@ -183,10 +189,24 @@ exports.getReward = async (req, res) => {
                                     else{
                                         console.log("Data Successfully updated",updatedData);
                                         // price = price - collectReward;
-                                        return res.json({
-                                            status: 200,
-                                            Reward: price
-                                        });
+                                        if(collectReward > price){
+                                            return res.json({
+                                                status: 200,
+                                                Reward: collectReward-price
+                                            });
+                                        }
+                                        else if(collectReward == 0){
+                                            return res.json({
+                                                status: 200,
+                                                Reward: price
+                                            });
+                                        }
+                                        else{
+                                            return res.json({
+                                                status: 200,
+                                                Reward: price-collectReward
+                                            });
+                                        }
                                     }
                                 })
                                 // price = price - collectReward;
@@ -308,13 +328,21 @@ exports.unStakeNft = async(req, res)=>{
                                 });
                             }
                             else{
+                                console.log("totalStake.length",totalStake.length);
+                                const arrOfNum = unStakeArr.map(str => {
+                                    return Number(str);
+                                  });
+                                console.log("arrOfNum",arrOfNum);
                                 for(let i = 0; i < totalStake.length; i++){
-                                    stake.updateOne({_id:totalStake[i]._id},{$pullAll:{'stakeNft':unStakeArr}},(err,finallyUpdate)=>{
+                                    stake.updateOne({_id:totalStake[i]._id},{$pullAll:{'stakeNft':arrOfNum}},(err,finallyUpdate)=>{
                                         if(err){
                                             return res.json({
                                             status: 400,
                                             message: "Something is wrong"
                                             });
+                                        }
+                                        else{
+                                            console.log("Done");
                                         }
                                     });
                                 }
