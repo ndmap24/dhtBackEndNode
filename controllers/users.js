@@ -245,18 +245,22 @@ exports.collectReward = async (req, res) => {
                     if (err) {
                         return res.json({
                             status: 400,
-                            message: "Something is wrong"
+                            message: "Something is wrong .",
+                            error: err
                         })
                     }
                     else {
                         var userReward = findData.collectReward;
                         console.log("userReward",userReward);
                         if(userReward == 0){
+                            console.log("reward",reward);
                             reward = reward;
                         }
                         else{
+                            console.log("findData.totalrewards-userReward",findData.totalrewards-userReward);
                             if(reward <= (findData.totalrewards-userReward)){
-                                reward = userReward + reward;
+                                reward = Number(userReward) + Number(reward);
+                                console.log("userReward + reward",reward);
                             }
                             else{
                                 return res.json({
@@ -265,11 +269,13 @@ exports.collectReward = async (req, res) => {
                                 })
                             }
                         }
-                        users.findByIdAndUpdate(id,{$set:{collectReward:reward}},(err,update)=>{
+                        console.log("rewardrewardrewardreward",reward);
+                        users.findByIdAndUpdate(id,{$set:{collectReward:Number(reward)}},(err,update)=>{
                             if (err) {
                                 return res.json({
                                     status: 400,
-                                    message: "Something is wrong"
+                                    message: "Something is wrong !",
+                                    error: err
                                 })
                             }
                             else {
