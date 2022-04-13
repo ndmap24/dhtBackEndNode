@@ -7,7 +7,10 @@ const {
   addStaking,
   getReward,
   collectReward,
-  unStakeNft
+  unStakeNft,
+  trnasferNFT,
+  GVOreward,
+  CollectGVOreward
 } = require("../controllers/users");
 
 
@@ -35,5 +38,7 @@ router.post(
   verifyAuth,
   unStakeNft
 );
-
+router.post("/trnasferNFT",verifyAuth,trnasferNFT);
+router.get("/GVOreward",verifyAuth,GVOreward);
+router.post("/CollectGVOreward", verifyAuth, CollectGVOreward)
 module.exports = router;
