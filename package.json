@@ -1,0 +1,24 @@
+{
+  "name": "dht_project",
+  "version": "1.0.0",
+  "description": "Diamand hand",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon index.js"
+  },
+  "keywords": [
+    "dht"
+  ],
+  "author": "nadeem beg",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.19.2",
+    "cors": "^2.8.5",
+    "cross-fetch": "^3.1.5",
+    "dotenv": "^16.0.0",
+    "express": "^4.17.3",
+    "http": "0.0.1-security",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^6.2.6"
+  }
+}
